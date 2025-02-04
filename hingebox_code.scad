@@ -479,10 +479,12 @@ module bs_shape( d, btn_d, btn_h, stalk_d, ra=0, f=$fn) {
         rotate([0,0,ra])
         translate([stend-bdr,d.y/2,wt]) cylinder( d=btn_d, h=btn_h, $fn=f, center=true );
     }
-    hull() { // stalk
-        translate([bdr,d.y/2,d.z/2]) cylinder( d=stalk_d, h=stht, $fn=f, center=true  );
-        rotate([0,0,ra])
-        translate([stend-bdr,d.y/2,d.z/2]) cylinder( d=stalk_d, h=stht, $fn=f, center=true  );
+    if(stalk_d != 0) {
+        hull() { // stalk
+            translate([bdr,d.y/2,d.z/2]) cylinder( d=stalk_d, h=stht, $fn=f, center=true  );
+            rotate([0,0,ra])
+            translate([stend-bdr,d.y/2,d.z/2]) cylinder( d=stalk_d, h=stht, $fn=f, center=true  );
+        }
     }
 } //bs_shape
 
@@ -563,10 +565,10 @@ module base_box( d, top_inset=false, f=corner_fn ) {
     b=corner_radius;
     tb= top_inset ? top_inset : b;
     hull() {
-        translate( [b,b,0] ) cylinder( r=b, r2=tb, h=d.z, $fn=f );
-        translate( [b,d.y-b,0] ) cylinder( r=b, r2=tb,h=d.z, $fn=f  );
-        translate( [d.x-b,b,0] ) cylinder( r=b, r2=tb,h=d.z, $fn=f  );
-        translate( [d.x-b,d.y-b,0] ) cylinder( r=b, r2=tb,h=d.z, $fn=f  );
+        translate( [b,b,0] ) cylinder( r1=b, r2=tb, h=d.z, $fn=f );
+        translate( [b,d.y-b,0] ) cylinder( r1=b, r2=tb,h=d.z, $fn=f  );
+        translate( [d.x-b,b,0] ) cylinder( r1=b, r2=tb,h=d.z, $fn=f  );
+        translate( [d.x-b,d.y-b,0] ) cylinder( r1=b, r2=tb,h=d.z, $fn=f  );
     }
 }
 
@@ -607,7 +609,7 @@ module hingedbox_half( bd, topflag=false ) {
     top_d = [dx-wt, dy-wt, wt];
     
     // inserts
-    ins_d=[ dx-wt2, dy-wt2, lz-wt2];
+    ins_d=[ dx-wt2, dy-wt2, lz-wt];
     
     // screw towers
     screw_id_bottom = (screw_id_bottom !=false)? screw_id_bottom : (screw_id*0.80);
@@ -788,7 +790,7 @@ module hingedbox_half( bd, topflag=false ) {
             // hinge pin hole
             translate( [0,0,0-CS]) cylinder( d=hinge_id, h=cl+CS2, $fn=ifn);
             // nut holes
-            if (topflag) { 
+            if (topflag && hnut_d != 0){ 
                 if (ntf >0) {translate( [0,0,0-CS] ) cylinder( d=hnut_d, h=hnut_t+CS2, $fn=6 ); }
                 if (ntf <0) {translate( [0,0,cl-hnut_t] ) cylinder( d=hnut_d, h=hnut_t+CS2, $fn=6 ); }
             }
